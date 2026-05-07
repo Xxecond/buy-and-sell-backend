@@ -2,24 +2,44 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const csurf = require('csurf');
 const rateLimit = require('express-rate-limit');
 const { PrismaClient } = require('@prisma/client');
+const { doubleCsrf } = require('csrf-csrf');
 const errorHandler = require('./middleware/errorHandler');
 
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
 const productRoutes = require('./routes/productRoutes')
-const OrderRoutes = require('./routes/orderRoutes')
+const OrderRoutes = require('./routes/orderRoutes');
+
 
 const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 5000;
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   message: "Too many requests, try again later"
 })
+
+
+
+const {
+  generateToken,
+  doubleCsrfProtection,
+} = doubleCsrf({
+  getSecret: () => process.env.CSRF_SECRET || "supersecretkey",
+  
+  cookieName: "csrf-token",
+
+  cookieOptions: {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+  }
+});
+
 
 // Middleware
 app.use(cors({
@@ -32,29 +52,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(limiter)
 
+app.use(doubleCsrfProtection);
+
+app.get("/api/csrf-token", (req, res) => {
+  const token = generateToken(req, res);
+
+  res.json({ csrfToken: token });
+});
+
 //API ROUTES
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', OrderRoutes);
 
-const csrfProtection = csurf({
-    cookie:{
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24
-  }
-})
-
-
-app.get("/api/csrf-token", csrfProtection, (req, res) => {
-    res.json({csrfToken: req.csrfToken() })
-  });
-
 app.use(errorHandler);
 
-// SERVER START
+// START SERVER
 const startServer = async () => {
   try {
     await prisma.$connect();
