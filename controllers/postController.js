@@ -26,7 +26,7 @@ const getMyPosts = async (req, res) =>{
 
         const posts = await prisma.post.findMany({
             where: {
-                userId: req.user.userId
+                userId: req.user.id
             },
             skip: (page - 1) * limit,
             take: limit,

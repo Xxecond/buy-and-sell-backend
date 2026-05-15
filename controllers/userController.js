@@ -34,15 +34,11 @@ const signup = async (req, res) => {
       { expiresIn: '21h' }
     );
 
-    // 6. send cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24
-    });
-
-    res.json({ user: newUser });
+    // 6. send bearer token
+    return res.json({
+      token,
+      user: newUser
+    })
 
 };
 
@@ -75,19 +71,13 @@ const login = async (req, res) => {
       { expiresIn: '21h' }
     );
 
-      res.cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24 
-    });
-
-    res.json({ user });
+return  res.json({
+        token, user
+      });
 
 };
 
 const logout = async (req, res) => {
-  res.clearCookie("token");
   res.json({message:"Logged out"})
 }
 
@@ -114,14 +104,14 @@ const getAllUsers = async  (req, res) => {
       id:"asc"
      }
   })
-   res.json(users)    
+  return res.json(users)    
 }
 
 
 const demoteUser = async (req, res) => {
     const { id } = req.params;
 
-    if (req.user.userId === Number(id)) {
+    if (req.user.id === Number(id)) {
       const err = new Error( "You cannot demote yourself" );
       err.status = 400;
       throw err;
@@ -156,7 +146,7 @@ const demoteUser = async (req, res) => {
 const deleteUser = async (req, res) => {
     const { id } = req.params;
 
-     if (req.user.userId === Number(id)) {
+     if (req.user.id === Number(id)) {
     const err = new Error("You can't delete yourself" );
     err.status = 400;
     throw err;

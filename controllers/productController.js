@@ -51,7 +51,7 @@ const updateProduct = async (req, res) =>{
 
     const updatedProduct = await prisma.product.update({
         where:{
-            id
+            id: Number(id)
         },
 
         data:{
