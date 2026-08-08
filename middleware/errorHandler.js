@@ -1,4 +1,4 @@
-const { ZodError } = require("zod");
+const { ZodError, success } = require("zod");
 
 const errorHandler = (err, req, res, next) =>{
     console.error(err);
@@ -12,7 +12,8 @@ const errorHandler = (err, req, res, next) =>{
     }
 
     res.status(statusCode).json({
-        error: message
+        success: false,
+        message
     });
 }
 

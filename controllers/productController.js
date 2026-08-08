@@ -1,80 +1,41 @@
-const {PrismaClient} =require('@prisma/client');
-const prisma = new PrismaClient();
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const { number } = require('zod');
+const productService = require('../services/productService');
 
 const createProduct = async (req, res) => {
+  const product = await productService.createProduct(req.body, req.user.id);
+  res.json(product);
+};
 
-const {title, description, price, available} = req.body;
+const getAllProduct = async (req, res) => {
+  const products = await productService.getAllProducts();
+  res.json(products);
+};
 
+const getMyProduct = async (req, res) => {
+  const products = await productService.getMyProducts(req.user.id);
+  res.json(products);
+};
 
-const product = await prisma.product.create({
-    
-    data:{
-     title, 
-     description,
-     price: parseFloat(price),
-     available,
-     sellerId: req.user.id
-    }
-})
-res.json(product)
-}
+const updateProduct = async (req, res) => {
+  const updated = await productService.updateProduct(
+    req.params.id,
+    req.body,
+    req.user.id
+  );
+  res.json(updated);
+};
 
+const deleteProduct = async (req, res) => {
+  const result = await productService.deleteProduct(
+    req.params.id,
+    req.user.id
+  );
+  res.json(result);
+};
 
-const getAllProduct= async (req, res) =>{
-    
-const products = await prisma.product.findMany({
-
-orderBy:{
-    id: "desc"
-}
-});
-
-res.json(products)
-}
-
-const getMyProduct = async (req, res) =>{
-    
-    const myProduct = await prisma.product.findMany({
-        where:{
-            sellerId: req.user.id
-        }
-    })
-    res.json(myProduct)
-}
-
-const updateProduct = async (req, res) =>{
-    const {id} = req.params;
-    const {title, description, price} = req.body;
-
-    const updatedProduct = await prisma.product.update({
-        where:{
-            id: Number(id)
-        },
-
-        data:{
-            title,
-            description,
-            price: parseFloat(price),
-            sellerId: req.user.id,
-            available: false
-        }
-    })
-    res.status(200).json(updatedProduct)
-}
-
-const deleteProduct = async (req, res) =>{
-    const {id} = req.params;
-    const deleteProduct = await prisma.product.delete({
-           where :{
-            id: Number(id)
-           }
-    })
-    if(deleteProduct){
-    return res.status(200).json({message: "product deleted successfully"})
-    }
-}
-
-module.exports = {getAllProduct, getMyProduct, createProduct, deleteProduct, updateProduct}
+module.exports = {
+  createProduct,
+  getAllProduct,
+  getMyProduct,
+  updateProduct,
+  deleteProduct
+};
