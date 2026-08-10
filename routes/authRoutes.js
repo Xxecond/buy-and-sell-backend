@@ -2,10 +2,10 @@ const express = require("express");
 const passport = require("passport");
 const asyncHandler = require("express-async-handler");
 const { oauthCallback } = require("../controllers/authController");
+const env = require('../config/env');
 
 const router = express.Router();
-const frontendUrl =
-  process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+const frontendUrl = env.FRONTEND_URL;
 
 router.get(
   "/google",
@@ -35,10 +35,7 @@ router.get(
   asyncHandler(oauthCallback("facebook")),
 );
 
-router.get(
-  "/twitter",
-  passport.authenticate("twitter"),
-);
+router.get("/twitter", passport.authenticate("twitter"));
 
 router.get(
   "/twitter/callback",

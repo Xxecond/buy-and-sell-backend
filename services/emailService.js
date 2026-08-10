@@ -1,21 +1,21 @@
 const { Resend } = require("resend");
+const env = require('../config/env');
 
 let resend;
 
 function getResend() {
   if (resend) return resend;
 
-  if (!process.env.RESEND_API_KEY) {
+  if (!env.RESEND_API_KEY) {
     throw new Error("Missing RESEND_API_KEY in .env");
   }
 
-  resend = new Resend(process.env.RESEND_API_KEY);
+  resend = new Resend(env.RESEND_API_KEY);
 
   return resend;
 }
 
-const getVerificationBaseUrl = () =>
-  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BASE_URL || process.env.FRONTEND_URL || "http://localhost:5000";
+const getVerificationBaseUrl = () => env.BACKEND_URL;
 
 const buildVerificationLink = (verificationToken) =>
   `${getVerificationBaseUrl()}/api/users/verify?token=${verificationToken}`;
@@ -57,7 +57,7 @@ const sendVerificationEmail = async (toEmail, verificationToken) => {
   const resend = getResend();
 
   await resend.emails.send({
-    from: process.env.EMAIL_FROM,
+    from: env.EMAIL_FROM,
     to: toEmail,
     subject: "Verify your email",
     html,

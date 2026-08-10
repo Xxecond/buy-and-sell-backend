@@ -2,9 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const cookieParser = require("cookie-parser");
-const passport = require("passport");
 
-require("./config/passport");
+const passport = require("./config/passport");
 const errorHandler = require("./middleware/errorHandler");
 
 const userRoutes = require("./routes/userRoutes");

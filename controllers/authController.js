@@ -1,11 +1,11 @@
 const { generateToken } = require("../utils/jwt");
+const env = require('../config/env');
 
-const frontendBaseUrl =
-  process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+const frontendBaseUrl = env.FRONTEND_URL;
 
 const cookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
+  secure: env.NODE_ENV === "production",
   sameSite: "lax",
   maxAge: 21 * 60 * 60 * 1000,
 };

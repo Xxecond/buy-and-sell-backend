@@ -1,6 +1,7 @@
 const prisma = require("../config/db");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const env = require("../config/env")
 
 const { generateToken } = require("../utils/jwt");
 const { sendVerificationEmail, buildVerificationLink } = require("../services/emailService");
@@ -53,7 +54,7 @@ const signup = async (req, res) => {
 
   return res.status(201).json({
     message: "Account created! Check your email to verify.",
-    verificationLink: process.env.NODE_ENV !== "production" ? buildVerificationLink(verificationToken) : undefined,
+    verificationLink: env.NODE_ENV !== "production" ? buildVerificationLink(verificationToken) : undefined,
   });
 };
 
@@ -101,7 +102,7 @@ const login = async (req, res) => {
   res.cookie("accessToken", token, {
     httpOnly: true,
 
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
 
     sameSite: "lax",
 
@@ -214,7 +215,7 @@ const resendVerificationEmail = async (req, res) => {
 
   return res.json({
     message: "Verification email sent",
-    verificationLink: process.env.NODE_ENV !== "production" ? buildVerificationLink(verificationToken) : undefined,
+    verificationLink: env.NODE_ENV !== "production" ? buildVerificationLink(verificationToken) : undefined,
   });
 };
 
@@ -226,7 +227,7 @@ const logout = (req, res) => {
   res.clearCookie("accessToken", {
     httpOnly: true,
 
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
 
     sameSite: "lax",
   });

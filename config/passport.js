@@ -5,9 +5,9 @@ const TwitterStrategy = require("passport-twitter").Strategy;
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const prisma = require("./db");
+const env = require("./env");
 
-const getBackendUrl = () =>
-  process.env.BACKEND_URL || process.env.FRONTEND_URL || "http://localhost:5000";
+const getBackendUrl = () => env.BACKEND_URL;
 
 const buildCallbackUrl = (provider) =>
   `${getBackendUrl()}/api/auth/${provider}/callback`;
@@ -34,8 +34,7 @@ const findOrCreateSocialUser = async (profile) => {
 
     user = await prisma.user.create({
       data: {
-        name:
-          profile.displayName || profile.username || email.split("@")[0],
+        name: profile.displayName || profile.username || email.split("@")[0],
         email,
         password: hashedPassword,
         isVerified: true,
@@ -59,8 +58,8 @@ const findOrCreateSocialUser = async (profile) => {
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientID: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
       callbackURL: buildCallbackUrl("google"),
     },
     async (_accessToken, _refreshToken, profile, done) => {
@@ -77,8 +76,8 @@ passport.use(
 passport.use(
   new FacebookStrategy(
     {
-      clientID: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      clientID: env.FACEBOOK_CLIENT_ID,
+      clientSecret: env.FACEBOOK_CLIENT_SECRET,
       callbackURL: buildCallbackUrl("facebook"),
       profileFields: ["id", "emails", "name", "displayName", "photos"],
     },
@@ -96,8 +95,8 @@ passport.use(
 passport.use(
   new TwitterStrategy(
     {
-      consumerKey: process.env.TWITTER_CONSUMER_KEY,
-      consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
+      consumerKey: env.TWITTER_CONSUMER_KEY,
+      consumerSecret: env.TWITTER_CONSUMER_SECRET,
       callbackURL: buildCallbackUrl("twitter"),
       includeEmail: true,
     },
