@@ -15,10 +15,10 @@ function getResend() {
   return resend;
 }
 
-const getVerificationBaseUrl = () => env.BACKEND_URL;
+const getVerificationBaseUrl = () => env.FRONTEND_URL;
 
 const buildVerificationLink = (verificationToken) =>
-  `${getVerificationBaseUrl()}/api/users/verify?token=${verificationToken}`;
+  `${getVerificationBaseUrl()}/auth/verify?token=${verificationToken}`;
 
 const sendVerificationEmail = async (toEmail, verificationToken) => {
   const verificationLink = buildVerificationLink(verificationToken);
