@@ -1,4 +1,4 @@
-const { z } = require('zod');
+const { z } = require("zod");
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -19,41 +19,44 @@ const signupSchema = z.object({
 });
 
 const idParamSchema = z.object({
-  id: z.string().regex(/^\d+$/, "Invalid Id")
-})
+  id: z.string().regex(/^\d+$/, "Invalid Id"),
+});
 
-const validateLogin = (req, res, next) =>{
-try{
-loginSchema.parse(req.body);
-  next();
-}catch(err){
-  err.status = 400;
-  next(err);
-}}
+const validateLogin = (req, res, next) => {
+  try {
+    loginSchema.parse(req.body);
+    next();
+  } catch (err) {
+    err.status = 400;
+    next(err);
+  }
+};
 
-const validateSignup = (req, res, next) =>{
-try{
- signupSchema.parse(req.body);
-  next();
-}catch(err){
-  err.status = 400;
-  next(err);
-}}
+const validateSignup = (req, res, next) => {
+  try {
+    signupSchema.parse(req.body);
+    next();
+  } catch (err) {
+    err.status = 400;
+    next(err);
+  }
+};
 
-const validateUserId = (req, res, next) =>{
-try{
-  idParamSchema.parse(req.params);
-  next();
-}catch(err){
-  err.status = 400;
-  next(err);
-}}
+const validateUserId = (req, res, next) => {
+  try {
+    idParamSchema.parse(req.params);
+    next();
+  } catch (err) {
+    err.status = 400;
+    next(err);
+  }
+};
 
-
-module.exports = { 
-loginSchema,
-signupSchema,
-idParamSchema,
-validateLogin,
-validateSignup,
-validateUserId};
+module.exports = {
+  loginSchema,
+  signupSchema,
+  idParamSchema,
+  validateLogin,
+  validateSignup,
+  validateUserId,
+};

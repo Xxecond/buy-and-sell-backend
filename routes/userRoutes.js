@@ -9,11 +9,13 @@ const {
   login,
   logout,
   verifyEmail,
+  checkVerification,
   resendVerificationEmail,
   promoteUser,
   demoteUser,
   deleteUser,
   getAllUsers,
+  getMe,
 } = require("../controllers/userController");
 const {
   validateSignup,
@@ -28,6 +30,9 @@ router.get(
   authorizeRole("superAdmin"),
   asyncHandler(getAllUsers),
 );
+
+router.get("/me", authMiddleware, asyncHandler(getMe));
+
 router.put(
   "/promote/:id",
   validateUserId,
@@ -56,6 +61,6 @@ router.post("/login", validateLogin, asyncHandler(login));
 router.post("/logout", asyncHandler(logout));
 router.post("/resendVerification", asyncHandler(resendVerificationEmail));
 router.get("/verify", asyncHandler(verifyEmail));
-router.get("/verifyEmail/:token", asyncHandler(verifyEmail));
+router.get("/check-verification", asyncHandler(checkVerification));
 
 module.exports = router;

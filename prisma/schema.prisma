@@ -8,24 +8,23 @@ datasource db {
 }
 
 model User {
-  id                  Int            @id @default(autoincrement())
-  name                String
-  email               String         @unique
-  password            String
-  createdAt           DateTime       @default(now())
-  role                String         @default("user")
-  avatar              String?
-  phone               String?
-  isVerified          Boolean        @default(false)
-  verificationExpires DateTime?
-  verificationToken   String?
-  cart                Cart?
-  orders              Order[]
-  posts               Post[]
-  products            Product[]
-  reviews             Review[]
-  sellerRequest       SellerRequest?
-  wishlist            Wishlist[]
+  id             Int             @id @default(autoincrement())
+  name           String
+  email          String          @unique
+  password       String
+  createdAt      DateTime        @default(now())
+  role           String          @default("user")
+  avatar         String?
+  phone          String?
+  isVerified     Boolean         @default(false)
+  cart           Cart?
+  orders         Order[]
+  posts          Post[]
+  products       Product[]
+  reviews        Review[]
+  sellerRequest  SellerRequest?
+  wishlist       Wishlist[]
+  deviceSessions DeviceSession[]
 }
 
 model SellerRequest {
@@ -125,6 +124,16 @@ model Review {
   productId Int
   createdAt DateTime @default(now())
   product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model DeviceSession {
+  id        Int      @id @default(autoincrement())
+  deviceId  String   @unique
+  userId    Int
+  token     String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
 }
 

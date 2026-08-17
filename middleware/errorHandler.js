@@ -1,20 +1,20 @@
 const { ZodError, success } = require("zod");
 
-const errorHandler = (err, req, res, next) =>{
-    console.error(err);
+const errorHandler = (err, req, res, next) => {
+  console.error(err);
 
-    let statusCode = err.status || 500;
-    let message = err.message || "something went wrong";
+  let statusCode = err.status || 500;
+  let message = err.message || "something went wrong";
 
-    if(err instanceof ZodError) {
-        statusCode = 400;
-        message = err.issues.map(e => e.message).join(", ");
-    }
+  if (err instanceof ZodError) {
+    statusCode = 400;
+    message = err.issues.map((e) => e.message).join(", ");
+  }
 
-    res.status(statusCode).json({
-        success: false,
-        message
-    });
-}
+  res.status(statusCode).json({
+    success: false,
+    message,
+  });
+};
 
 module.exports = errorHandler;

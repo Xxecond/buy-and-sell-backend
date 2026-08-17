@@ -15,13 +15,11 @@ function getResend() {
   return resend;
 }
 
-const getVerificationBaseUrl = () => env.FRONTEND_URL;
+const buildVerificationLink = (deviceId) =>
+  `${env.BACKEND_URL}/api/users/verify?device_id=${deviceId}`;
 
-const buildVerificationLink = (verificationToken) =>
-  `${getVerificationBaseUrl()}/auth/verify?token=${verificationToken}`;
-
-const sendVerificationEmail = async (toEmail, verificationToken) => {
-  const verificationLink = buildVerificationLink(verificationToken);
+const sendVerificationEmail = async (toEmail, deviceId) => {
+  const verificationLink = buildVerificationLink(deviceId);
 
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:20px;">

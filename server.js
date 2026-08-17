@@ -1,7 +1,7 @@
 require("dotenv").config();
 const env = require("./config/env")
 
-const app = require("./app");
+const app = require("./app");``
 const prisma = require("./config/db");
 
 const PORT = env.PORT || 5000;
