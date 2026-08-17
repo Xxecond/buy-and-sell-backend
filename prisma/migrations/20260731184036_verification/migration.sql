@@ -1,2 +1,3 @@
--- This migration is intentionally empty (columns were never applied to production)
-SELECT 1;
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN "verificationToken" TEXT;
+ALTER TABLE "User" ADD COLUMN "verificationExpires" TIMESTAMP(3);
