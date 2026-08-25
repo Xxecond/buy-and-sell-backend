@@ -18,15 +18,32 @@ const signup = async (req, res) => {
 
   const lowerCaseEmail = email.toLowerCase();
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email: lowerCaseEmail },
+  const isNotVerified = await prisma.user.findFirst({
+    where:{email:lowerCaseEmail,
+      isVerified: false,}
+  })
+
+  if(isNotVerified){
+    const err = new Error("Account not verified. Click resend email for a new link.")
+    err.status = 400;
+    throw err;
+  }
+
+
+  const existingUser = await prisma.user.findFirst({
+    where: { email: lowerCaseEmail,
+      isVerified :true,
+     },
+
   });
 
+  
   if (existingUser) {
     const err = new Error("User already exists");
     err.status = 400;
     throw err;
   }
+
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const formattedName =
@@ -42,7 +59,7 @@ const signup = async (req, res) => {
     },
   });
 
-  await prisma.deviceSession.upsert({
+ await prisma.deviceSession.upsert({
     where: { deviceId: sessionId },
     update: {
       userId: newUser.id,
@@ -55,11 +72,12 @@ const signup = async (req, res) => {
     },
   });
 
-  await sendVerificationEmail(lowerCaseEmail, sessionId);
+  
+await sendVerificationEmail(lowerCaseEmail, sessionId);
 
   return res.status(201).json({
     success: true,
-    message: "Check email to verify account.",
+    message: "Check your email to verify account.",
     nextStep: "VERIFY_EMAIL",
     data: {
       user: {
@@ -88,7 +106,7 @@ const login = async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { email: lowerCaseEmail },
   });
-
+  
   if (!user) {
     const err = new Error("Password or email is incorrect.");
     err.status = 400;
@@ -101,6 +119,7 @@ const login = async (req, res) => {
       .status(403)
       .json({ message: "Please verify your email before logging in" });
   }
+
 
   const isMatch = await bcrypt.compare(password, user.password);
 
@@ -176,7 +195,7 @@ const verifyEmail = async (req, res) => {
     maxAge: 21 * 60 * 60 * 1000,
   });
 
-  return res.redirect(`${env.FRONTEND_URL}/auth/verify?success=true`);
+  return res.redirect(`${env.FRONTEND_URL}/auth/verify?success=true&token=${authToken}`);
 };
 
 // =========================
@@ -232,7 +251,7 @@ const resendVerificationEmail = async (req, res) => {
       .status(400)
       .json({
         success: false,
-        message: "Email already verified.",
+        message: "Email already verified. Login instead.",
         error: "EMAIL_ALREADY_VERIFIED",
       });
   }
